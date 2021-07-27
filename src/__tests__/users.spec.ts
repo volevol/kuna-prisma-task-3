@@ -1,9 +1,9 @@
 import prisma from "../client";
 import { 
-  createUser, createAuto, createOrder,
-  getUser, getAuto, getOrder,
+  createUser, createAuto,
+  getUser, getAuto,
   getUsers, getAutos, 
-  updateUser, updateAuto, updateOrder,
+  updateUser, updateAuto,
   deleteUser, deleteAuto
 } from "../functions/users";
 
@@ -19,14 +19,22 @@ const deleteAutoRecords = async () => {
   ]);
 }
 
+const deleteOrderRecords = async () => {
+  await prisma.$transaction([
+    prisma.order.deleteMany()
+  ]);
+}
+
 beforeEach(async () => {
   await deleteUserRecords();
   await deleteAutoRecords();
+  await deleteOrderRecords();
 })
 
 afterAll(async () => {
   await deleteUserRecords();
   await deleteAutoRecords();
+  await deleteOrderRecords();
   await prisma.$disconnect();
 })
 
@@ -64,29 +72,6 @@ test('should find auto with id', async () => {
   expect(auto?.id).toEqual(autoId);
 })
 
-/*
-test('should find order with id', async () => {
-  const userId = 1;
-  const autoId = 1;
-  const orderId = 1;
-  
-  const orderData = {
-    id: orderId,
-    userId: userId, 
-    autoId: autoId,
-    delivery: "TO_ADDRESS",
-    payment: "VISA",
-    address: "Wall. St."
-  }
-
-  await createOrder(orderData);
-
-  const order = await getOrder(orderId);
-
-  expect(order?.id).toEqual(orderId);
-})
-*/
-
 test('should find all users', async () => {
   const initialUsers = await getUsers();
 
@@ -120,20 +105,6 @@ test('should find all autos', async () => {
 
   expect(initialAutos.length + 1).toEqual(newAutos.length);
 })
-
-// test('should find all orders', async () => {
-//   const initialOrders = await getOrders();
-
-//   const orderData = {
-//     // here
-//   }
-
-//   await createOrder(orderData);
-
-//   const newOrders = await getOrders();
-
-//   expect(initialOrders.length + 1).toEqual(newOrders.length);
-// })
 
 test('should create new user ', async () => {
   const userId = 322;
@@ -181,37 +152,6 @@ test('should create new auto ', async () => {
   const auto = await getAuto(newAuto.id);
 
   expect(expectedAuto).toEqual(auto);
-})
-
-test('should create new order ', async () => {
-  const userId = 7;
-  const autoId = 7;
-  const orderId = 7;
-
-  const orderData = {
-    id: orderId,
-    userId, 
-    autoId,
-  }
-
-  const newOrder = await createOrder(orderData);
-
-  console.log(newOrder)
-
-  expect(1).toEqual(1);
-/*
-  const newOrder = await createOrder(orderData);
-
-  const expectedOrder = {
-    id: orderId,
-    userId, 
-    autoId,
-  }
-
-  const order = await getOrder(newOrder.id);
-
-  expect(expectedOrder).toEqual(order);
-*/  
 })
 
 test('should update user ', async () => {
@@ -264,28 +204,6 @@ test('should update auto ', async () => {
 
   expect(auto).toEqual(updatedAuto);
 })
-
-/*
-test('should update order ', async () => {
-  const orderId = 4;
-
-  const orderData = {
-    // here
-  }
-
-  const newOrder = await createOrder(orderData);
-
-  const updateOrderData = {
-    // here
-  }
-
-  const updatedOrder = await updateOrder(newOrder.id, updateOrderData);
-
-  const order = await getOrder(updatedOrder.id);
-
-  expect(order).toEqual(updatedOrder);
-})
-*/
 
 test('should delete user with id', async () => {
   const userId = 3;

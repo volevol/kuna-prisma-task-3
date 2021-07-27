@@ -14,7 +14,7 @@ model Auto {
   model         String
   cost          Int
   fuelLiter     Int
-  orders        Order[]
+  Order         Order[]
 }
 
 model Order {
@@ -26,26 +26,11 @@ model Order {
   address  String @default("none")
   User     User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   Auto     Auto   @relation(fields: [autoId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  @@unique([userId, autoId])
-//   @@unique([userId, autoId], name: "user_auto_order_id")
 }
-
-// model Order {
-//   id             Int    @default(autoincrement()) @id
-//   userId         Int    @unique
-//   address        Int    @default(1)
-//   payment        Int    @default(1)
-//   createdAt      Int    @default(1)
-//   status         Int    @default(1)
-//   delivery       Int    @default(1)
-//   User           User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-//   Autos          PlayerSkill[]
-// }
 
 model User {
   id            Int    @default(autoincrement()) @id
   name          String 
   email         String @unique
-  orders         Order[]
+  Order         Order[]
 }
