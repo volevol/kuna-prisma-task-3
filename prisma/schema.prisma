@@ -1,0 +1,51 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["referentialActions"]
+}
+
+model Auto {
+  id            Int     @default(autoincrement()) @id
+  brand         String
+  model         String
+  cost          Int
+  fuelLiter     Int
+  Order         Order[]
+}
+
+model Order {
+  id       Int    @default(autoincrement()) @id
+  userId   Int
+  autoId   Int
+  delivery String @default("pick up")
+  payment  String @default("cash")
+  address  String @default("none")
+  User     User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Auto     Auto   @relation(fields: [autoId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([userId, autoId])
+//   @@unique([userId, autoId], name: "user_auto_order_id")
+}
+
+// model Order {
+//   id             Int    @default(autoincrement()) @id
+//   userId         Int    @unique
+//   address        Int    @default(1)
+//   payment        Int    @default(1)
+//   createdAt      Int    @default(1)
+//   status         Int    @default(1)
+//   delivery       Int    @default(1)
+//   User           User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+//   Autos          PlayerSkill[]
+// }
+
+model User {
+  id            Int    @default(autoincrement()) @id
+  name          String 
+  email         String @unique
+  Order         Order[]
+}
