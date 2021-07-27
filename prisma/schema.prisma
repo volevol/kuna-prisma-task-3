@@ -14,7 +14,7 @@ model Auto {
   model         String
   cost          Int
   fuelLiter     Int
-  Order         Order[]
+  orders        Order[]
 }
 
 model Order {
@@ -47,5 +47,5 @@ model User {
   id            Int    @default(autoincrement()) @id
   name          String 
   email         String @unique
-  Order         Order[]
+  orders         Order[]
 }

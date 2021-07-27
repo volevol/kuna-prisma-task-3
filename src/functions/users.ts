@@ -14,9 +14,12 @@ type CreateAuto = {
 }
 
 type CreateOrder = {
-  delivery: string,
-  payment: string,
-  address: string
+  id?: number;
+  userId: number;
+  autoId: number;
+  delivery?: string;
+  payment?: string;
+  address?: string;
 }
 
 type UpdateUser = {
@@ -31,10 +34,18 @@ type UpdateAuto = {
   fuelLiter: number
 }
 
+/*
+type UpdateOrder = {
+  delivery: string,
+  payment: string,
+  address: string
+}
+*/
+
 export async function getUsers() {
   return prisma.user.findMany({
     include: {
-      Order: true,
+      orders: true,
     },
   })
 }
@@ -42,7 +53,7 @@ export async function getUsers() {
 export async function getAutos() {
   return prisma.auto.findMany({
     include: {
-      Order: true,
+      orders: true,
     },
   })
 }
@@ -77,7 +88,7 @@ export async function getUserDetails(userId: number) {
       id: userId,
     },
     include: {
-      Order: true,
+      orders: true,
     },
   })
 }
@@ -98,9 +109,9 @@ export async function createAuto(auto: CreateAuto) {
   })
 }
 
-// export async function createOrder(order: CreateOrder) {
-//   return prisma.order.create({ data: order })
-// } 
+export async function createOrder(order: CreateOrder) {
+  return prisma.order.create({ data: {...order} })
+} 
 
 export async function updateUser(userId: number, user: UpdateUser) {
   return prisma.user.update({
@@ -119,6 +130,18 @@ export async function updateAuto(autoId: number, auto: UpdateAuto) {
     data: auto,
   })
 }
+
+/*
+export async function updateOrder(orderId: number, 
+  order: UpdateOrder) {
+  return prisma.order.update({
+    where: {
+      id: orderId,
+    },
+    data: order,
+  })
+}
+*/
 
 export async function deleteUser(userId: number) {
   return prisma.user.delete({
