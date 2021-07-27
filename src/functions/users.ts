@@ -98,9 +98,9 @@ export async function createAuto(auto: CreateAuto) {
   })
 }
 
-export async function createOrder(order: CreateOrder) {
-  return prisma.order.create({ data: order })
-} 
+// export async function createOrder(order: CreateOrder) {
+//   return prisma.order.create({ data: order })
+// } 
 
 export async function updateUser(userId: number, user: UpdateUser) {
   return prisma.user.update({

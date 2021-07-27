@@ -1,11 +1,11 @@
 import prisma from "../client";
 import { 
-  createUser, createAuto, createOrder,
-  getUser, getAuto, getOrder,
+  createUser, createAuto,
+  getUser, getAuto,
   getUsers, getAutos, 
   updateUser, updateAuto, 
   deleteUser, deleteAuto
-} from "../functions/players";
+} from "../functions/users";
 
 const deleteUserRecords = async () => {
   await prisma.$transaction([
@@ -64,26 +64,26 @@ test('should find auto with id', async () => {
   expect(auto?.id).toEqual(autoId);
 })
 
-test('should find order with id', async () => {
-  const userId = 1;
-  const autoId = 1;
-  const orderId = 1;
+// test('should find order with id', async () => {
+//   const userId = 1;
+//   const autoId = 1;
+//   const orderId = 1;
   
-  const orderData = {
-    id: orderId,
-    userId, 
-    autoId,
-    delivery: "TO_ADDRESS",
-    payment: "VISA",
-    address: "Wall. St."
-  }
+//   const orderData = {
+//     id: orderId,
+//     userId, 
+//     autoId,
+//     delivery: "TO_ADDRESS",
+//     payment: "VISA",
+//     address: "Wall. St."
+//   }
 
-  await createOrder(orderData);
+//   await createOrder(orderData);
 
-  const order = await getOrder(orderId);
+//   const order = await getOrder(orderId);
 
-  expect(order?.id).toEqual(orderId);
-})
+//   expect(order?.id).toEqual(orderId);
+// })
 
 test('should find all users', async () => {
   const initialUsers = await getUsers();
