@@ -2,20 +2,64 @@
 import prisma from '../client';
 
 type CreateUser = {
+  id?: string;
   email: string,
   name: string
-}
-
-type CreateAuto = {
-  brand: string,
-  model: string,
-  cost: number,
-  fuelLiter: number
 }
 
 type UpdateUser = {
   email: string,
   name: string
+}
+
+
+export async function createUser(user: CreateUser) {
+  return prisma.user.create({
+    data: {
+      ...user
+    }
+  })
+}
+
+export async function getUser(userId: string) {
+  return prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  })
+}
+
+export async function getUsers() {
+  return prisma.user.findMany({
+    include: {
+      Order: true,
+    },
+  })
+}
+
+export async function updateUser(userId: string, user: UpdateUser) {
+  return prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: user,
+  })
+}
+
+export async function deleteUser(userId: string) {
+  return prisma.user.delete({
+    where: {
+      id: userId,
+    },
+  })
+}
+
+type CreateAuto = {
+  id?: string;
+  brand: string,
+  model: string,
+  cost: number,
+  fuelLiter: number
 }
 
 type UpdateAuto = {
@@ -25,10 +69,18 @@ type UpdateAuto = {
   fuelLiter: number
 }
 
-export async function getUsers() {
-  return prisma.user.findMany({
-    include: {
-      Order: true,
+export async function createAuto(auto: CreateAuto) {
+  return prisma.auto.create({
+    data: {
+      ...auto
+    }
+  })
+}
+
+export async function getAuto(autoId: string) {
+  return prisma.auto.findUnique({
+    where: {
+      id: autoId,
     },
   })
 }
@@ -41,59 +93,7 @@ export async function getAutos() {
   })
 }
 
-export async function getUser(userId: number) {
-  return prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-  })
-}
-
-export async function getAuto(autoId: number) {
-  return prisma.auto.findUnique({
-    where: {
-      id: autoId,
-    },
-  })
-}
-
-export async function getUserDetails(userId: number) {
-  return prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-    include: {
-      Order: true,
-    },
-  })
-}
-
-export async function createUser(user: CreateUser) {
-  return prisma.user.create({
-    data: {
-      ...user
-    }
-  })
-}
-
-export async function createAuto(auto: CreateAuto) {
-  return prisma.auto.create({
-    data: {
-      ...auto
-    }
-  })
-}
-
-export async function updateUser(userId: number, user: UpdateUser) {
-  return prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: user,
-  })
-}
-
-export async function updateAuto(autoId: number, auto: UpdateAuto) {
+export async function updateAuto(autoId: string, auto: UpdateAuto) {
   return prisma.auto.update({
     where: {
       id: autoId,
@@ -102,18 +102,59 @@ export async function updateAuto(autoId: number, auto: UpdateAuto) {
   })
 }
 
-export async function deleteUser(userId: number) {
-  return prisma.user.delete({
+export async function deleteAuto(autoId: string) {
+  return prisma.auto.delete({
     where: {
-      id: userId,
+      id: autoId,
     },
   })
 }
 
-export async function deleteAuto(autoId: number) {
-  return prisma.auto.delete({
+
+type CreateOrder = {
+  id?: string;
+  userId: string;
+  autoId: string;
+  delivery?: string;
+  payment?: string;
+  address?: string;
+}
+
+type UpdateOrder = {
+  delivery?: string;
+  payment?: string;
+  address?: string;
+}
+
+export async function createOrder(order: CreateOrder) {
+  return prisma.order.create({data: order})
+}
+
+export async function getOrder(orderId: string) {
+  return prisma.order.findUnique({
     where: {
-      id: autoId,
+      id: orderId,
+    },
+  })
+}
+
+export async function getOrders() {
+  return prisma.order.findMany()
+}
+
+export async function updateOrder(orderId: string, order: UpdateOrder) {
+  return prisma.order.update({
+    where: {
+      id: orderId,
+    },
+    data: order,
+  })
+}
+
+export async function deleteOrder(orderId: string) {
+  return prisma.order.delete({
+    where: {
+      id: orderId,
     },
   })
 }

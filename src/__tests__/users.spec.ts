@@ -1,11 +1,13 @@
 import prisma from "../client";
 import { 
-  createUser, createAuto,
-  getUser, getAuto,
-  getUsers, getAutos, 
-  updateUser, updateAuto,
-  deleteUser, deleteAuto
+  createUser, createAuto, createOrder,
+  getUser,    getAuto,    getOrder,
+  getUsers,   getAutos,   getOrders,
+  updateUser, updateAuto, updateOrder,
+  deleteUser, deleteAuto, deleteOrder
 } from "../functions/users";
+
+import {v4 as uuidv4} from 'uuid';
 
 const deleteUserRecords = async () => {
   await prisma.$transaction([
@@ -39,7 +41,7 @@ afterAll(async () => {
 })
 
 test('should find user with id', async () => {
-  const userId = 1;
+  const userId = uuidv4();
   
   const userData = {
     id: userId,
@@ -54,29 +56,11 @@ test('should find user with id', async () => {
   expect(user?.id).toEqual(userId);
 })
 
-test('should find auto with id', async () => {
-  const autoId = 1;
-  
-  const autoData = {
-    id: autoId,
-    brand: 'Hyundai',
-    model: 'Elantra',
-    cost: 20000,
-    fuelLiter: 47
-  }
-
-  await createAuto(autoData);
-
-  const auto = await getAuto(autoId);
-
-  expect(auto?.id).toEqual(autoId);
-})
-
 test('should find all users', async () => {
   const initialUsers = await getUsers();
 
   const userData = {
-    id: 2,
+    id: uuidv4(),
     name: 'Bob',
     email: 'b@b.b'
   }
@@ -88,26 +72,8 @@ test('should find all users', async () => {
   expect(initialUsers.length + 1).toEqual(newUsers.length);
 })
 
-test('should find all autos', async () => {
-  const initialAutos = await getAutos();
-
-  const autoData = {
-    id: 2,
-    brand: 'Chevrolet',
-    model: 'Aveo',
-    cost: 3000,
-    fuelLiter: 45
-  }
-
-  await createAuto(autoData);
-
-  const newAutos = await getAutos();
-
-  expect(initialAutos.length + 1).toEqual(newAutos.length);
-})
-
 test('should create new user ', async () => {
-  const userId = 322;
+  const userId = uuidv4();
 
   const userData = {
     id: userId,
@@ -128,8 +94,85 @@ test('should create new user ', async () => {
   expect(expectedUser).toEqual(user);
 })
 
+test('should update user ', async () => {
+  const userId = uuidv4();
+
+  const userData = {
+    id: userId,
+    name: 'Gary',
+    email: 'g@g.g'
+  }
+
+  const newUser = await createUser(userData);
+
+  const updateUserData = {
+    name: 'Garfield',
+    email: 'g@g.g'
+  }
+
+  const updatedUser = await updateUser(newUser.id, updateUserData);
+
+  const user = await getUser(updatedUser.id);
+
+  expect(user).toEqual(updatedUser);
+})
+
+test('should delete user with id', async () => {
+  const userId = uuidv4();
+
+  const userData = {
+    id: userId,
+    name: 'Luise',
+    email: 'l@l.l'
+  }
+
+  await createUser(userData);
+
+  await deleteUser(userId);
+
+  const user = await getUser(userId);
+
+  expect(user).toEqual(null);
+})
+
+test('should find auto with id', async () => {
+  const autoId = uuidv4();
+  
+  const autoData = {
+    id: autoId,
+    brand: 'Hyundai',
+    model: 'Elantra',
+    cost: 20000,
+    fuelLiter: 47
+  }
+
+  await createAuto(autoData);
+
+  const auto = await getAuto(autoId);
+
+  expect(auto?.id).toEqual(autoId);
+})
+
+test('should find all autos', async () => {
+  const initialAutos = await getAutos();
+
+  const autoData = {
+    id: uuidv4(),
+    brand: 'Chevrolet',
+    model: 'Aveo',
+    cost: 3000,
+    fuelLiter: 45
+  }
+
+  await createAuto(autoData);
+
+  const newAutos = await getAutos();
+
+  expect(initialAutos.length + 1).toEqual(newAutos.length);
+})
+
 test('should create new auto ', async () => {
-  const autoId = 322;
+  const autoId = uuidv4();
 
   const autoData = {
     id: autoId,
@@ -154,31 +197,8 @@ test('should create new auto ', async () => {
   expect(expectedAuto).toEqual(auto);
 })
 
-test('should update user ', async () => {
-  const userId = 4;
-
-  const userData = {
-    id: userId,
-    name: 'Gary',
-    email: 'g@g.g'
-  }
-
-  const newUser = await createUser(userData);
-
-  const updateUserData = {
-    name: 'Garfield',
-    email: 'g@g.g'
-  }
-
-  const updatedUser = await updateUser(newUser.id, updateUserData);
-
-  const user = await getUser(updatedUser.id);
-
-  expect(user).toEqual(updatedUser);
-})
-
 test('should update auto ', async () => {
-  const autoId = 4;
+  const autoId = uuidv4();
 
   const autoData = {
     id: autoId,
@@ -205,26 +225,8 @@ test('should update auto ', async () => {
   expect(auto).toEqual(updatedAuto);
 })
 
-test('should delete user with id', async () => {
-  const userId = 3;
-
-  const userData = {
-    id: userId,
-    name: 'Luise',
-    email: 'l@l.l'
-  }
-
-  await createUser(userData);
-
-  await deleteUser(userId);
-
-  const user = await getUser(userId);
-
-  expect(user).toEqual(null);
-})
-
 test('should delete auto with id', async () => {
-  const autoId = 3;
+  const autoId = uuidv4();
 
   const autoData = {
     id: autoId,
@@ -241,4 +243,205 @@ test('should delete auto with id', async () => {
   const auto = await getAuto(autoId);
 
   expect(auto).toEqual(null);
+})
+
+test('should find order with id', async () => {
+  const userId = uuidv4();
+  const autoId = uuidv4();
+  const orderId = uuidv4();
+
+  const userData = {
+    id: userId,
+    name: 'Yan',
+    email: 'y@y.y'
+  }
+
+  const autoData = {
+    id: autoId,
+    brand: 'Smth',
+    model: 'Cool',
+    cost: 13000,
+    fuelLiter: 44
+  }
+
+  const orderData = {
+    id: orderId,
+    userId,
+    autoId
+  }
+
+  const newUser = await createUser(userData);
+  const newAuto = await createAuto(autoData);
+  const newOrder = await createOrder(orderData);
+
+  const expectedOrder = {
+    id: orderId,
+    userId,
+    autoId,
+    delivery: "pick up",
+    payment: "cash",
+    address: "none"
+  }
+
+  const order = await getOrder(orderId);
+
+  expect(order?.id).toEqual(orderId);
+})
+
+test('should find all orders', async () => {
+  const initialOrders = await getOrders();
+
+  const userId = uuidv4();
+  const autoId = uuidv4();
+  const orderId = uuidv4();
+
+  const userData = {
+    id: userId,
+    name: 'Rick',
+    email: 'r@r.r'
+  }
+
+  const autoData = {
+    id: autoId,
+    brand: 'Space',
+    model: 'Vehicle',
+    cost: 66000,
+    fuelLiter: 99
+  }
+
+  const orderData = {
+    id: orderId,
+    userId,
+    autoId
+  }
+
+  const newUser = await createUser(userData);
+  const newAuto = await createAuto(autoData);
+  const newOrder = await createOrder(orderData);
+
+  const newOrders = await getOrders();
+
+  expect(initialOrders.length + 1).toEqual(newOrders.length);
+})
+
+test('should create new order ', async () => {
+  const userId = uuidv4();
+  const autoId = uuidv4();
+  const orderId = uuidv4();
+
+  const userData = {
+    id: userId,
+    name: 'Rick',
+    email: 'r@r.r'
+  }
+
+  const autoData = {
+    id: autoId,
+    brand: 'Space',
+    model: 'Vehicle',
+    cost: 66000,
+    fuelLiter: 99
+  }
+
+  const orderData = {
+    id: orderId,
+    userId,
+    autoId
+  }
+
+  const newUser = await createUser(userData);
+  const newAuto = await createAuto(autoData);
+  const newOrder = await createOrder(orderData);
+
+  const expectedOrder = {
+    id: orderId,
+    userId,
+    autoId,
+    delivery: "pick up",
+    payment: "cash",
+    address: "none"
+  }
+
+  const order = await getOrder(newOrder.id);
+
+  expect(expectedOrder).toEqual(order);
+})
+
+test('should update order ', async () => {
+  const userId = uuidv4();
+  const autoId = uuidv4();
+  const orderId = uuidv4();
+
+  const userData = {
+    id: userId,
+    name: 'Morty',
+    email: 'm@m.m'
+  }
+
+  const autoData = {
+    id: autoId,
+    brand: 'T',
+    model: '600',
+    cost: 70000,
+    fuelLiter: 10
+  }
+
+  const orderData = {
+    id: orderId,
+    userId,
+    autoId
+  }
+
+  const newUser = await createUser(userData);
+  const newAuto = await createAuto(autoData);
+  const newOrder = await createOrder(orderData);
+
+  const updateOrderData = {
+    delivery: "to address",
+    payment: "VISA",
+    address: "Wall St."
+  }
+
+  const updatedOrder = await updateOrder(newOrder.id, updateOrderData);
+
+  const order = await getOrder(updatedOrder.id);
+
+  expect(order).toEqual(updatedOrder);
+})
+
+test('should delete order with id', async () => {
+  
+  const userId = uuidv4();
+  const autoId = uuidv4();
+  const orderId = uuidv4();
+
+  const userData = {
+    id: userId,
+    name: 'Alex',
+    email: 'a@a.a'
+  }
+
+  const autoData = {
+    id: autoId,
+    brand: 'Das',
+    model: 'Auto',
+    cost: 111111,
+    fuelLiter: 11
+  }
+
+  const orderData = {
+    id: orderId,
+    userId,
+    autoId
+  }
+
+  const newUser = await createUser(userData);
+  const newAuto = await createAuto(autoData);
+  const newOrder = await createOrder(orderData);
+
+  await deleteOrder(orderId);
+
+  const order = await getOrder(orderId);
+
+  expect(order).toEqual(null);
 })
